@@ -2,6 +2,6 @@ export interface Pizza {
   id: string;
   name: string;
   description: string;
-  toppingIds: [];
+  toppingIds: string[];
   imgSrc: string;
 }
