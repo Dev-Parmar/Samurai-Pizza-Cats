@@ -3,7 +3,7 @@ import { pizzaProvider } from '../providers';
 
 const pizzaResolver = {
   Query: {
-    pizzas: async (): Promise<Pizza[]> => {
+    pizzas: async (): Promise<Omit<Pizza, 'toppings'>[]> => {
       return pizzaProvider.getPizzas();
     },
   },
