@@ -2,6 +2,7 @@ import { Pizza } from '../../types';
 import CardItem from '../common/CardItem';
 import { CardMedia, CardContent, Typography, Theme, createStyles, ListItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import toDollars from '../../lib/format-dollars';
 
 export interface PizzaItemProps {
   pizza?: Pizza;
@@ -21,20 +22,26 @@ const PizzaItem: React.FC<PizzaItemProps> = ({ pizza }) => {
   return (
     <ListItem className={classes.header}>
       <CardItem>
-        <CardMedia component="img" height="250" image={pizza?.imgSrc} alt={pizza?.name} />
+        <Typography variant="h6" component="div">
+          {pizza?.priceCents ? toDollars(pizza?.priceCents) : ''}
+        </Typography>
+        {pizza?.imgSrc ? <CardMedia component="img" height="250" image={pizza?.imgSrc} alt={pizza?.name} /> : null}
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            {pizza?.name ?? 'Make a Pizza'}({pizza?.id ?? ''})
+            {pizza?.name ? `Name: ${pizza?.name}` : 'Make a Pizza'} <br />
+            {pizza?.id ? `Id: ${pizza?.id}` : ''}
           </Typography>
           <Typography gutterBottom variant="h6" component="div">
-            {pizza?.description}
+            {pizza?.description ? `Desc: ${pizza?.description}` : ''}
           </Typography>
           <Typography variant="body2" component="div">
-            {pizza?.toppings.map((topping) => (
-              <li>
-                {topping.name} ------ {topping.priceCents} ------ {topping.id}
-              </li>
-            ))}
+            {pizza?.toppings
+              ? pizza?.toppings.map((topping) => (
+                  <p key={topping.id}>
+                    {topping.name} ------ {toDollars(topping.priceCents)} ------ {topping.id}
+                  </p>
+                ))
+              : null}
           </Typography>
         </CardContent>
       </CardItem>

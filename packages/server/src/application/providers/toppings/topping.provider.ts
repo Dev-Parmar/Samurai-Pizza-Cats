@@ -16,6 +16,22 @@ class ToppingProvider {
     return toppings.map(toToppingObject);
   }
 
+  public async getPriceCents(toppingIds: string[]): Promise<number> {
+    const toppingData = await this.collection
+      .find(
+        {
+          _id: { $in: toppingIds },
+        },
+        {
+          projection: { priceCents: 1, _id: 0 },
+        }
+      )
+      .toArray();
+
+    let toppingsPrice: number[] = toppingData.map((amount) => amount.priceCents);
+    return toppingsPrice.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+  }
+
   public async getToppings(): Promise<Topping[]> {
     const toppings = await this.collection.find().sort({ name: 1 }).toArray();
     return toppings.map(toToppingObject);
