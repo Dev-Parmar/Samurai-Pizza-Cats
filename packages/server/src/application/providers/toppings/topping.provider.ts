@@ -6,10 +6,20 @@ import validateStringInputs from '../../../lib/string-validator';
 class ToppingProvider {
   constructor(private collection: Collection<ToppingDocument>) {}
 
+  public async validateToppings(givenId: string[]): Promise<void> {
+    const toppingData = await this.getToppingsById(givenId);
+    const toppingIds = toppingData.map((toppings) => new ObjectId(toppings.id));
+
+    if (toppingIds.length !== givenId.length) {
+      throw new Error('Invalid toppings');
+    }
+  }
+
   public async getToppingsById(toppingIds: string[]): Promise<Topping[]> {
+    const toppingObjectIds = toppingIds.map((id) => new ObjectId(id));
     const toppings = await this.collection
       .find({
-        _id: { $in: toppingIds },
+        _id: { $in: toppingObjectIds },
       })
       .sort({ name: 1 })
       .toArray();
@@ -17,10 +27,11 @@ class ToppingProvider {
   }
 
   public async getPriceCents(toppingIds: string[]): Promise<number> {
+    const toppingObjectIds = toppingIds.map((id) => new ObjectId(id));
     const toppingData = await this.collection
       .find(
         {
-          _id: { $in: toppingIds },
+          _id: { $in: toppingObjectIds },
         },
         {
           projection: { priceCents: 1, _id: 0 },
@@ -54,7 +65,6 @@ class ToppingProvider {
 
   public async deleteTopping(id: string): Promise<string> {
     const toppingId = new ObjectId(id);
-
     const toppingData = await this.collection.findOneAndDelete({
       _id: toppingId,
     });
