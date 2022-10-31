@@ -19,16 +19,7 @@ class PizzaProvider {
 
     const toppingObjectIds = toppingIds.map((id) => new ObjectId(id));
 
-    //APP crashing when I call function(validateTopping) to throw an error but works fine when I do it without calling function
-    // toppingProvider.validateToppings(toppingIds)
-
-    //I wrote the function here for validateToppings instead of calling it
-    const toppingData = await toppingProvider.getToppingsById(toppingIds);
-    const toppings = toppingData.map((toppings) => new ObjectId(toppings.id));
-
-    if (toppingIds.length !== toppings.length) {
-      throw new Error('Invalid toppings');
-    }
+    await toppingProvider.validateToppings(toppingIds);
 
     const data = await this.collection.findOneAndUpdate(
       { _id: new ObjectId() },
