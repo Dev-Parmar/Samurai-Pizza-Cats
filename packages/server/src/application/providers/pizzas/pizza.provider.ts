@@ -2,10 +2,10 @@ import { Collection, ObjectId } from 'mongodb';
 import validateStringInputs from '../../../lib/string-validator';
 import { PizzaDocument, toPizzaObject } from '../../../entities/pizza';
 import { CreatePizzaInput, Pizza, UpdatePizzaInput } from './pizza.provider.types';
-import { toppingProvider } from '..';
+import { ToppingProvider } from '../toppings/topping.provider';
 
 class PizzaProvider {
-  constructor(private collection: Collection<PizzaDocument>) {}
+  constructor(private collection: Collection<PizzaDocument>, private toppingProvider: ToppingProvider) {}
 
   public async getPizzas(): Promise<Pizza[]> {
     const pizzas = await this.collection.find().sort({ name: 1 }).toArray();
@@ -19,7 +19,7 @@ class PizzaProvider {
 
     const toppingObjectIds = toppingIds.map((id) => new ObjectId(id));
 
-    await toppingProvider.validateToppings(toppingIds);
+    await this.toppingProvider.validateToppings(toppingIds);
 
     const data = await this.collection.findOneAndUpdate(
       { _id: new ObjectId() },
@@ -47,12 +47,8 @@ class PizzaProvider {
     const { id, name, description, toppingIds, imgSrc } = input;
     let toppingObjectIds;
 
-    const inputArr = Object.values(input);
-    inputArr.forEach((value) => {
-      validateStringInputs(value);
-    });
-
     if (toppingIds) {
+      await this.toppingProvider.validateToppings(toppingIds);
       toppingObjectIds = toppingIds.map((id) => new ObjectId(id));
     }
 
@@ -60,10 +56,10 @@ class PizzaProvider {
       { _id: new ObjectId(id) },
       {
         $set: {
-          ...(name && { name: name }),
-          ...(description && { description: description }),
+          ...(name && { name: validateStringInputs(name) }),
+          ...(description && { description: validateStringInputs(description) }),
           ...(toppingIds && { toppingIds: toppingObjectIds }),
-          ...(imgSrc && { imgSrc: imgSrc }),
+          ...(imgSrc && { imgSrc: validateStringInputs(imgSrc) }),
         },
       },
       { returnDocument: 'after' }
