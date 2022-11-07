@@ -56,10 +56,10 @@ class PizzaProvider {
       { _id: new ObjectId(id) },
       {
         $set: {
-          ...(name && { name: validateStringInputs(name) }),
-          ...(description && { description: validateStringInputs(description) }),
+          ...(name && { name: name }),
+          ...(description && { description: description }),
           ...(toppingIds && { toppingIds: toppingObjectIds }),
-          ...(imgSrc && { imgSrc: validateStringInputs(imgSrc) }),
+          ...(imgSrc && { imgSrc: imgSrc }),
         },
       },
       { returnDocument: 'after' }
