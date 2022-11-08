@@ -21,16 +21,18 @@ const defaultClientOptions: ApolloClientOptions<NormalizedCacheObject> = {
 };
 
 const Providers: React.FC<ProvidersProps> = ({ clientOptions = {}, children }) => (
-  <ApolloProvider
-    client={
-      new ApolloClient({
-        ...defaultClientOptions,
-        ...clientOptions,
-      })
-    }
-  >
-    <ThemeProvider theme={theme}>{children}</ThemeProvider>
-  </ApolloProvider>
+  <React.StrictMode>
+    <ApolloProvider
+      client={
+        new ApolloClient({
+          ...defaultClientOptions,
+          ...clientOptions,
+        })
+      }
+    >
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+    </ApolloProvider>
+  </React.StrictMode>
 );
 
 export { Providers };

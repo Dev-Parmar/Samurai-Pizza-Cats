@@ -64,10 +64,11 @@ const PizzaModal = ({ selectedPizza, open, setOpen }: PizzaModalProps): JSX.Elem
 
   const getToppingName = (givenTopping: string[]): string[] => {
     let updatedTopping: string[] = new Array();
+
     if (givenTopping) {
-      givenTopping.map((e: any) => {
-        toppings.find((nameTopping: any) => {
-          if (nameTopping.id === e) {
+      givenTopping.map((givenToppingId: string) => {
+        toppings.map((nameTopping: any) => {
+          if (nameTopping.id === givenToppingId) {
             updatedTopping.push(nameTopping.name);
           }
         });
@@ -76,59 +77,58 @@ const PizzaModal = ({ selectedPizza, open, setOpen }: PizzaModalProps): JSX.Elem
     return updatedTopping;
   };
 
-  const getToppingIds = (givenTopping: any): any => {
+  const getToppingIds = (givenTopping: string[]): string[] => {
     let updatedTopping: string[] = new Array();
+
     if (givenTopping) {
-      givenTopping.map((e: any) => {
-        toppings.find((nameTopping: any) => {
-          if (nameTopping.name === e) {
+      givenTopping.map((givenToppingName: string) => {
+        toppings.map((nameTopping: any) => {
+          if (nameTopping.name === givenToppingName) {
             updatedTopping.push(nameTopping.id);
           }
         });
       });
-      return updatedTopping;
-    } else {
-      return null;
     }
+    return updatedTopping;
   };
 
   return (
-    <Modal
-      aria-labelledby="transition-modal-title"
-      aria-describedby="transition-modal-description"
-      className={classes.modal}
-      open={open}
-      onClose={(): void => setOpen(false)}
-      closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{
-        timeout: 500,
+    <Formik
+      initialValues={{
+        name: selectedPizza?.name,
+        description: selectedPizza?.description,
+        toppingIds: getToppingName(selectedPizza?.toppingIds),
+        imgSrc: selectedPizza?.imgSrc,
+      }}
+      enableReinitialize
+      onSubmit={(values): void => {
+        values.toppingIds = getToppingIds(values.toppingIds);
+        if (selectedPizza?.id) {
+          const givePizza = { id: selectedPizza.id, ...values };
+          onUpdatePizza(givePizza);
+          setOpen(false);
+        } else {
+          onCreatePizza(values);
+          setOpen(false);
+        }
       }}
     >
-      <Fade in={open}>
-        <Paper className={classes.paper}>
-          <Formik
-            initialValues={{
-              name: selectedPizza?.name,
-              description: selectedPizza?.description,
-              toppingIds: getToppingName(selectedPizza?.toppingIds),
-              imgSrc: selectedPizza?.imgSrc,
-            }}
-            enableReinitialize
-            onSubmit={(values): void => {
-              values.toppingIds = getToppingIds(values.toppingIds);
-              if (selectedPizza?.id) {
-                const givePizza = { id: selectedPizza.id, ...values };
-                onUpdatePizza(givePizza);
-                setOpen(false);
-              } else {
-                onCreatePizza(values);
-                setOpen(false);
-              }
-            }}
-          >
-            {(props: FormikProps<any>): JSX.Element => (
-              <Form className={classes.root} noValidate autoComplete="off">
+      {(props: FormikProps<any>): JSX.Element => (
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          className={classes.modal}
+          open={open}
+          onClose={(): void => setOpen(false)}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Form className={classes.root} noValidate autoComplete="off">
+            <Fade in={open}>
+              <Paper className={classes.paper}>
                 <div>
                   <h1 className={classes.modal}>{props.values.name ? 'Edit Pizza' : 'Add Pizza'}</h1>
                   <div
@@ -239,12 +239,12 @@ const PizzaModal = ({ selectedPizza, open, setOpen }: PizzaModalProps): JSX.Elem
                     )}
                   </div>
                 </div>
-              </Form>
-            )}
-          </Formik>
-        </Paper>
-      </Fade>
-    </Modal>
+              </Paper>
+            </Fade>
+          </Form>
+        </Modal>
+      )}
+    </Formik>
   );
 };
 
