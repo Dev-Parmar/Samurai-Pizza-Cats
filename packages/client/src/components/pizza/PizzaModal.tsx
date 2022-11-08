@@ -62,47 +62,16 @@ const PizzaModal = ({ selectedPizza, open, setOpen }: PizzaModalProps): JSX.Elem
 
   const { onCreatePizza, onUpdatePizza, onDeletePizza } = usePizzaMutations();
 
-  const getToppingName = (givenTopping: string[]): string[] => {
-    let updatedTopping: string[] = new Array();
-
-    if (givenTopping) {
-      givenTopping.map((givenToppingId: string) => {
-        toppings.map((nameTopping: any) => {
-          if (nameTopping.id === givenToppingId) {
-            updatedTopping.push(nameTopping.name);
-          }
-        });
-      });
-    }
-    return updatedTopping;
-  };
-
-  const getToppingIds = (givenTopping: string[]): string[] => {
-    let updatedTopping: string[] = new Array();
-
-    if (givenTopping) {
-      givenTopping.map((givenToppingName: string) => {
-        toppings.map((nameTopping: any) => {
-          if (nameTopping.name === givenToppingName) {
-            updatedTopping.push(nameTopping.id);
-          }
-        });
-      });
-    }
-    return updatedTopping;
-  };
-
   return (
     <Formik
       initialValues={{
         name: selectedPizza?.name,
         description: selectedPizza?.description,
-        toppingIds: getToppingName(selectedPizza?.toppingIds),
+        toppingIds: selectedPizza?.toppingIds,
         imgSrc: selectedPizza?.imgSrc,
       }}
       enableReinitialize
       onSubmit={(values): void => {
-        values.toppingIds = getToppingIds(values.toppingIds);
         if (selectedPizza?.id) {
           const givePizza = { id: selectedPizza.id, ...values };
           onUpdatePizza(givePizza);
@@ -206,7 +175,7 @@ const PizzaModal = ({ selectedPizza, open, setOpen }: PizzaModalProps): JSX.Elem
                                 input={<OutlinedInput />}
                               >
                                 {toppings.map((topping: Topping) => (
-                                  <MenuItem key={topping.id} value={topping.name}>
+                                  <MenuItem key={topping.id} value={topping.id}>
                                     {topping.name}
                                   </MenuItem>
                                 ))}
