@@ -35,14 +35,14 @@ const useStyles = makeStyles(({ typography, spacing }: Theme) =>
       },
     },
     image: {
-      height: '30ch',
-      width: '30ch',
+      height: '35ch',
+      width: '35ch',
     },
     name: {
       display: 'flex',
       justifyContent: 'center',
-      margin: spacing(2, 0, 2),
-      fontSize: typography.pxToRem(24),
+      margin: spacing(1, 0, 1),
+      fontSize: typography.pxToRem(20),
     },
   })
 );
