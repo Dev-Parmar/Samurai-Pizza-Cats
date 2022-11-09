@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { makeStyles } from '@material-ui/styles';
-import { Container, createStyles, Theme, List } from '@material-ui/core';
+import CardItem from '../common/CardItem';
+import { AddCircle } from '@material-ui/icons';
+import { Container, createStyles, Theme, Grid, CardContent, IconButton } from '@material-ui/core';
 
 import PageHeader from '../common/PageHeader';
 import { GET_PIZZAS } from '../../hooks/graphql/pizza/queries/get-pizzas';
@@ -10,15 +12,37 @@ import { Pizza } from '../../types';
 import PizzaItem from './PizzaItem';
 import PizzaModal from './PizzaModal';
 
-const useStyles = makeStyles(({ typography }: Theme) =>
+const useStyles = makeStyles(({ typography, spacing }: Theme) =>
   createStyles({
     container: {
       minWidth: typography.pxToRem(650),
     },
     skeleton: {
+      minWidth: typography.pxToRem(650),
       display: 'flex',
       justifyContent: 'center',
       verticalAlign: 'center',
+    },
+    root: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      textAlign: 'center',
+      padding: spacing(2, 5, 2),
+      height: typography.pxToRem(600),
+      '&:hover': {
+        cursor: 'pointer',
+      },
+    },
+    image: {
+      height: '35ch',
+      width: '35ch',
+    },
+    name: {
+      display: 'flex',
+      justifyContent: 'center',
+      margin: spacing(1, 0, 1),
+      fontSize: typography.pxToRem(20),
     },
   })
 );
@@ -53,12 +77,37 @@ const Pizzas: React.FC = () => {
   ));
 
   return (
-    <Container maxWidth="md">
+    <Container>
       <PageHeader pageHeader={'Pizzas'} />
-      <List className={classes.container}>
-        <PizzaItem key="add-pizza" selectPizza={selectPizza} />
+      <Grid container spacing={4} className={classes.container}>
+        <Grid item sm={12} md={6} lg={4}>
+          <CardItem onClick={(): void => selectPizza()}>
+            <div className={classes.image}>
+              <img
+                className={classes.image}
+                src={
+                  'https://images.unsplash.com/photo-1489564239502-7a532064e1c2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80'
+                }
+              />
+            </div>
+            <CardContent>
+              <div className={classes.name}>
+                <h4>Make a Pizza</h4>
+              </div>
+              <IconButton
+                edge="end"
+                size="medium"
+                aria-label="modify"
+                type="button"
+                onClick={(): void => selectPizza()}
+              >
+                <AddCircle />
+              </IconButton>
+            </CardContent>
+          </CardItem>
+        </Grid>
         {pizzaList}
-      </List>
+      </Grid>
 
       <PizzaModal selectedPizza={selectedPizza} open={open} setOpen={setOpen} />
     </Container>
