@@ -105,8 +105,8 @@ const PizzaModal = ({ selectedPizza, open, setOpen }: PizzaModalProps): JSX.Elem
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      height: '20rem',
-                      margin: '1.5rem',
+                      height: '15rem',
+                      margin: '1rem',
                     }}
                   >
                     <img
