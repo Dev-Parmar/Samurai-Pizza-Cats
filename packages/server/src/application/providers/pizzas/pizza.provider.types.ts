@@ -6,6 +6,18 @@ export interface Pizza {
   imgSrc: string;
 }
 
+export interface GetPizzasResponse {
+  results?: Pizza[] | null;
+  hasNextPage: boolean;
+  totalCount: number;
+  cursor?: string | null;
+}
+
+export interface PizzasInput {
+  cursor?: string | null;
+  limit?: number | null;
+}
+
 export interface CreatePizzaInput {
   name: string;
   description: string;

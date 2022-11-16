@@ -1,15 +1,60 @@
 import { Collection, ObjectId } from 'mongodb';
 import validateStringInputs from '../../../lib/string-validator';
 import { PizzaDocument, toPizzaObject } from '../../../entities/pizza';
-import { CreatePizzaInput, Pizza, UpdatePizzaInput } from './pizza.provider.types';
+import { CreatePizzaInput, PizzasInput, Pizza, UpdatePizzaInput, GetPizzasResponse } from './pizza.provider.types';
 import { ToppingProvider } from '../toppings/topping.provider';
 
 class PizzaProvider {
   constructor(private collection: Collection<PizzaDocument>, private toppingProvider: ToppingProvider) {}
 
-  public async getPizzas(): Promise<Pizza[]> {
-    const pizzas = await this.collection.find().sort({ name: 1 }).toArray();
-    return pizzas.map(toPizzaObject);
+  public async getCursorIndex(cursor?: ObjectId | null): Promise<number> {
+    const cursorIndex = await this.collection.countDocuments({
+      _id: { $lte: cursor },
+    });
+
+    return cursorIndex;
+  }
+
+  public async getCursorResults(limit?: number | null, cursor?: ObjectId | null): Promise<GetPizzasResponse> {
+    const cursorIndex: number = await this.getCursorIndex(cursor ? cursor : null);
+
+    let newLimit: number = 0;
+
+    if (limit === 0) {
+      newLimit = 0;
+    } else if (limit === null) {
+      newLimit = 5;
+    } else if (limit) {
+      newLimit = limit;
+    }
+
+    const pizzaData = await this.collection.find().sort({ _id: 1 }).skip(cursorIndex).limit(newLimit).toArray();
+
+    let lastItem: any = pizzaData[pizzaData.length - 1]._id;
+
+    const results = pizzaData.map(toPizzaObject);
+    const totalCount: number = pizzaData.length;
+    let hasNextPage: boolean = true;
+
+    const isLastItem = await this.collection.findOne({ _id: { $gt: lastItem } });
+    if (isLastItem) {
+      hasNextPage = true;
+    } else {
+      hasNextPage = false;
+      lastItem = null;
+    }
+
+    return {
+      hasNextPage: hasNextPage,
+      totalCount: totalCount,
+      cursor: lastItem ? lastItem.toHexString() : null,
+      results: results,
+    };
+  }
+
+  public async getPizzas(input: PizzasInput): Promise<GetPizzasResponse> {
+    const pizzas = await this.getCursorResults(input.limit, input.cursor ? new ObjectId(input.cursor) : null);
+    return pizzas;
   }
 
   public async createPizza(input: CreatePizzaInput): Promise<Pizza> {

@@ -11,8 +11,20 @@ const typeDefs = gql`
     imgSrc: String!
   }
 
+  type GetPizzasResponse {
+    results: [Pizza!]
+    totalCount: Int!
+    hasNextPage: Boolean!
+    cursor: String
+  }
+
   type Query {
-    pizzas: [Pizza!]!
+    pizzas(input: PizzasInput!): GetPizzasResponse!
+  }
+
+  input PizzasInput {
+    cursor: ObjectID
+    limit: Long
   }
 
   type Mutation {
