@@ -8,6 +8,7 @@ import {
   MutationCreatePizzaArgs,
   MutationDeletePizzaArgs,
   MutationUpdatePizzaArgs,
+  QueryPizzasArgs,
 } from '../../src/application/schema/types/schema';
 
 import { createMockPizza } from '../helpers/pizza.helper';
@@ -33,42 +34,56 @@ describe('pizzaResolver', (): void => {
   describe('Query', () => {
     describe('pizzas', () => {
       const query = gql`
-        query getPizzas {
-          pizzas {
-            id
-            name
-            description
-            toppingIds
-            toppings {
+        query Query($input: PizzasInput!) {
+          pizzas(input: $input) {
+            results {
               id
               name
+              description
+              toppingIds
+              toppings {
+                id
+                name
+                priceCents
+              }
               priceCents
+              imgSrc
             }
-            priceCents
-            imgSrc
+            totalCount
+            hasNextPage
+            cursor
           }
         }
       `;
 
       test('should get all pizzas', async () => {
-        jest.spyOn(pizzaProvider, 'getPizzas').mockResolvedValue([mockPizza]);
-
-        const result = await client.query({ query });
-
-        expect(result.data).toEqual({
-          pizzas: [
-            {
-              __typename: 'Pizza',
-              id: mockPizza.id,
-              name: mockPizza.name,
-              description: mockPizza.description,
-              toppingIds: mockPizza.toppingIds,
-              toppings: mockPizza.toppings,
-              priceCents: mockPizza.priceCents,
-              imgSrc: mockPizza.imgSrc,
-            },
-          ],
+        jest.spyOn(pizzaProvider, 'getPizzas').mockResolvedValue({
+          results: [mockPizza],
+          cursor: null,
+          hasNextPage: true,
+          totalCount: 5,
         });
+
+        const variables: QueryPizzasArgs = {
+          input: {
+            limit: null,
+            cursor: null,
+          },
+        };
+        const result = await client.query({ query, variables });
+
+        expect(result.data.pizzas.results).toEqual([
+          {
+            __typename: 'Pizza',
+            id: mockPizza.id,
+            name: mockPizza.name,
+            description: mockPizza.description,
+            toppingIds: mockPizza.toppingIds,
+            toppings: mockPizza.toppings,
+            priceCents: mockPizza.priceCents,
+            imgSrc: mockPizza.imgSrc,
+          },
+        ]);
 
         expect(pizzaProvider.getPizzas).toHaveBeenCalledTimes(1);
       });

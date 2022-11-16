@@ -34,6 +34,14 @@ export type DeleteToppingInput = {
   id: Scalars['ObjectID'];
 };
 
+export type GetPizzasResponse = {
+  __typename?: 'GetPizzasResponse';
+  cursor?: Maybe<Scalars['String']>;
+  hasNextPage: Scalars['Boolean'];
+  results?: Maybe<Array<Pizza>>;
+  totalCount: Scalars['Int'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createPizza: Pizza;
@@ -79,10 +87,19 @@ export type Pizza = {
   toppings: Array<Topping>;
 };
 
+export type PizzasInput = {
+  cursor?: InputMaybe<Scalars['ObjectID']>;
+  limit?: InputMaybe<Scalars['Long']>;
+};
+
 export type Query = {
   __typename?: 'Query';
-  pizzas: Array<Pizza>;
+  pizzas: GetPizzasResponse;
   toppings: Array<Topping>;
+};
+
+export type QueryPizzasArgs = {
+  input: PizzasInput;
 };
 
 export type Topping = {

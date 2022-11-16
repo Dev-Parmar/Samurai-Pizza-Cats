@@ -8,4 +8,9 @@ const mockSortToArray =
   (): any =>
     ({ sort: () => ({ toArray: (): any => resultArray }) } as any);
 
-export { mockToArray, mockSortToArray };
+const mockSortSkipLimitToArray =
+  (resultArray: any[]): any =>
+  (): any =>
+    ({ sort: () => ({ skip: (): any => ({ limit: (): any => ({ toArray: (): any => resultArray }) }) }) } as any);
+
+export { mockToArray, mockSortToArray, mockSortSkipLimitToArray };
