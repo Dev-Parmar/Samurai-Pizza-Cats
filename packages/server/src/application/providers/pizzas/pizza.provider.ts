@@ -15,20 +15,18 @@ class PizzaProvider {
     return cursorIndex;
   }
 
-  public async getCursorResults(limit?: number | null, cursor?: ObjectId | null): Promise<GetPizzasResponse> {
+  public async getCursorResults(limit: number, cursor?: ObjectId | null): Promise<GetPizzasResponse> {
     const cursorIndex: number = await this.getCursorIndex(cursor ? cursor : null);
 
-    let newLimit: number = 0;
+    let newLimit: number;
 
-    if (limit === 0) {
+    if (limit) {
+      newLimit = limit + cursorIndex;
+    } else {
       newLimit = 0;
-    } else if (limit === null) {
-      newLimit = 5;
-    } else if (limit) {
-      newLimit = limit;
     }
 
-    const pizzaData = await this.collection.find().sort({ _id: 1 }).skip(cursorIndex).limit(newLimit).toArray();
+    const pizzaData = await this.collection.find().sort({ _id: 1 }).limit(newLimit).toArray();
 
     let lastItem: any = pizzaData[pizzaData.length - 1]._id;
 
@@ -53,7 +51,16 @@ class PizzaProvider {
   }
 
   public async getPizzas(input: PizzasInput): Promise<GetPizzasResponse> {
-    const pizzas = await this.getCursorResults(input.limit, input.cursor ? new ObjectId(input.cursor) : null);
+    let pizzas: GetPizzasResponse;
+    if (input) {
+      pizzas = await this.getCursorResults(
+        input.limit ? input.limit : 0,
+        input.cursor ? new ObjectId(input.cursor) : null
+      );
+    } else {
+      pizzas = await this.getCursorResults(0, null);
+    }
+
     return pizzas;
   }
 

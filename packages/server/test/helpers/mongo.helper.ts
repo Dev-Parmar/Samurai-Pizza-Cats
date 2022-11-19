@@ -11,6 +11,6 @@ const mockSortToArray =
 const mockSortSkipLimitToArray =
   (resultArray: any[]): any =>
   (): any =>
-    ({ sort: () => ({ skip: (): any => ({ limit: (): any => ({ toArray: (): any => resultArray }) }) }) } as any);
+    ({ sort: () => ({ limit: (): any => ({ toArray: (): any => resultArray }) }) } as any);
 
 export { mockToArray, mockSortToArray, mockSortSkipLimitToArray };

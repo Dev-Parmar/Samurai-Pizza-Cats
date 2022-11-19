@@ -19,12 +19,12 @@ const typeDefs = gql`
   }
 
   type Query {
-    pizzas(input: PizzasInput!): GetPizzasResponse!
+    pizzas(input: PizzasInput): GetPizzasResponse!
   }
 
   input PizzasInput {
     cursor: ObjectID
-    limit: Long
+    limit: Int
   }
 
   type Mutation {
