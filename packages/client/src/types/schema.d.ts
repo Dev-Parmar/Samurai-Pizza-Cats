@@ -89,7 +89,7 @@ export type Pizza = {
 
 export type PizzasInput = {
   cursor?: InputMaybe<Scalars['ObjectID']>;
-  limit?: InputMaybe<Scalars['Long']>;
+  limit?: InputMaybe<Scalars['Int']>;
 };
 
 export type Query = {
@@ -99,7 +99,7 @@ export type Query = {
 };
 
 export type QueryPizzasArgs = {
-  input: PizzasInput;
+  input?: InputMaybe<PizzasInput>;
 };
 
 export type Topping = {

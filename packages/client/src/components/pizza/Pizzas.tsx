@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/client';
 import { makeStyles } from '@material-ui/styles';
 import CardItem from '../common/CardItem';
 import { AddCircle } from '@material-ui/icons';
-import { Container, createStyles, Theme, Grid, CardContent, IconButton } from '@material-ui/core';
+import { Container, createStyles, Theme, Grid, CardContent, IconButton, Button } from '@material-ui/core';
 
 import PageHeader from '../common/PageHeader';
 import { GET_PIZZAS } from '../../hooks/graphql/pizza/queries/get-pizzas';
@@ -44,6 +44,11 @@ const useStyles = makeStyles(({ typography, spacing }: Theme) =>
       margin: spacing(1, 0, 1),
       fontSize: typography.pxToRem(20),
     },
+    button: {
+      display: 'flex',
+      justifyContent: 'center',
+      margin: spacing(5, 0, 1),
+    },
   })
 );
 
@@ -53,7 +58,14 @@ const Pizzas: React.FC = () => {
   const [open, setOpen] = React.useState(false);
   const [selectedPizza, setSelectedPizza] = useState<Partial<Pizza>>();
 
-  const { loading, error, data } = useQuery(GET_PIZZAS);
+  const { loading, error, data, refetch } = useQuery(GET_PIZZAS, {
+    variables: {
+      input: {
+        cursor: null,
+        limit: 8,
+      },
+    },
+  });
 
   const selectPizza = (pizza?: Pizza): void => {
     setSelectedPizza(pizza);
@@ -72,7 +84,7 @@ const Pizzas: React.FC = () => {
     return <div className={classes.skeleton}>{error.message}</div>;
   }
 
-  const pizzaList = data?.pizzas.map((pizza: Pizza) => (
+  const pizzaList = data?.pizzas.results.map((pizza: Pizza) => (
     <PizzaItem data-testid={`pizza-item-${pizza?.id}`} key={pizza.id} pizza={pizza} selectPizza={selectPizza} />
   ));
 
@@ -108,6 +120,17 @@ const Pizzas: React.FC = () => {
         </Grid>
         {pizzaList}
       </Grid>
+      {data.pizzas.hasNextPage ? (
+        <div className={classes.button}>
+          <Button
+            size="large"
+            variant="outlined"
+            onClick={(): any => refetch({ input: { cursor: data.pizzas.cursor, limit: 8 } })}
+          >
+            See More Pizzas
+          </Button>
+        </div>
+      ) : null}
 
       <PizzaModal selectedPizza={selectedPizza} open={open} setOpen={setOpen} />
     </Container>

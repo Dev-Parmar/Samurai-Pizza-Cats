@@ -16,6 +16,7 @@ describe('Pizzas', () => {
       ...view,
       $findPizzaItems: () => screen.findAllByTestId(/^pizza-item-/),
       $visiblePizzaItem: () => screen.queryByTestId('pizza-list-loading'),
+      $findShowMoreButton: () => screen.queryByText('See More Pizzas'),
     };
   };
 
@@ -25,7 +26,12 @@ describe('Pizzas', () => {
         return response(
           context.data({
             loading: false,
-            pizzas: [...data],
+            pizzas: {
+              results: [...data],
+              totalCount: 2,
+              cursor: null,
+              hasNextPage: false,
+            },
           })
         );
       }),
@@ -54,6 +60,14 @@ describe('Pizzas', () => {
       const { $visiblePizzaItem } = renderPizzaList();
 
       expect($visiblePizzaItem()).not.toBeNull();
+    });
+  });
+
+  test('see more pizzas button not visible when hasNextPage is false', async () => {
+    await waitFor(async () => {
+      const { $findShowMoreButton } = renderPizzaList();
+
+      expect(await $findShowMoreButton()).toBeNull();
     });
   });
 });

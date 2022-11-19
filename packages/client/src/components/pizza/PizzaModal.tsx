@@ -71,13 +71,32 @@ const PizzaModal = ({ selectedPizza, open, setOpen }: PizzaModalProps): JSX.Elem
         imgSrc: selectedPizza?.imgSrc,
       }}
       enableReinitialize
-      onSubmit={(values): void => {
+      validate={(values): void => {
+        let errors: any = {};
+        if (!values.name) {
+          errors.name = 'Required!';
+        }
+        if (!values.description) {
+          errors.description = 'Required!';
+        }
+        if (!values.imgSrc) {
+          errors.imgSrc = 'Required!';
+        }
+        if (!values.toppingIds) {
+          errors.toppingsIds = 'Required!';
+        }
+
+        return errors;
+      }}
+      onSubmit={(values, { resetForm }): void => {
         if (selectedPizza?.id) {
           const givePizza = { id: selectedPizza.id, ...values };
           onUpdatePizza(givePizza);
+          resetForm();
           setOpen(false);
         } else {
           onCreatePizza(values);
+          resetForm();
           setOpen(false);
         }
       }}
@@ -124,10 +143,12 @@ const PizzaModal = ({ selectedPizza, open, setOpen }: PizzaModalProps): JSX.Elem
                         <TextField
                           id="name"
                           name="name"
+                          placeholder="Name"
                           value={props.values.name ? props.values.name : ''}
                           onChange={props.handleChange}
                         />
                       </div>
+                      {props.errors.name && props.touched.name && <div>{props.errors.name}</div>}
                     </div>
                     <div className={classes.div}>
                       <div style={{ width: '25%' }}>
@@ -137,10 +158,12 @@ const PizzaModal = ({ selectedPizza, open, setOpen }: PizzaModalProps): JSX.Elem
                         <TextField
                           id="description"
                           name="description"
+                          placeholder="Description"
                           value={props.values.description ? props.values.description : ''}
                           onChange={props.handleChange}
                         />
                       </div>
+                      {props.errors.description && props.touched.description && <div>{props.errors.description}</div>}
                     </div>
 
                     <div className={classes.div}>
@@ -151,10 +174,12 @@ const PizzaModal = ({ selectedPizza, open, setOpen }: PizzaModalProps): JSX.Elem
                         <TextField
                           id="imgSrc"
                           name="imgSrc"
+                          placeholder="Image URL"
                           value={props.values.imgSrc ? props.values.imgSrc : ''}
                           onChange={props.handleChange}
                         />
                       </div>
+                      {props.errors.imgSrc && props.touched.imgSrc && <div>{props.errors.imgSrc}</div>}
                     </div>
                   </div>
                   <div style={{ margin: '1em' }}>
