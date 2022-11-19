@@ -28,9 +28,9 @@ describe('Pizzas', () => {
             loading: false,
             pizzas: {
               results: [...data],
-              totalCount: 8,
+              totalCount: 2,
               cursor: null,
-              hasNextPage: true,
+              hasNextPage: false,
             },
           })
         );
