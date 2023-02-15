@@ -2,27 +2,6 @@
 
 ### Harvest-Talent-Builder
 
-## Getting Started
-
-1. Create a new personal (and private!) repository in the Harvest-Builder github organization: https://github.com/Harvest-Builders/
-   name: Samurai-Pizza-Cats-<your REAL name>
-
-1. Cloning the repository
-   `git clone https://github.com/Harvest-Builders/Samurai-Pizza-Cats.git`
-
-1. Rename your origin upstream so that your changes get pushed to your own repository
-   `cd Samurai-Pizza-Cats`
-   `git remote rename origin upstream`
-   `git remote add origin git@github.com:Harvest-Builders/Samurai-Pizza-Cats-<your REAL name>.git`
-
-1. Check to make sure your origin is the newly created repo
-   `git config --get remote.origin.url`
-
-1. Push your local copy to the version with matching name on the Harvest Builders Github
-   `git push -u origin master`
-
-1. Check Github and make sure your repo is there with all of its code
-
 ## running the code:
 
 1. Run `npm run install:all` to install dependencies
@@ -35,10 +14,6 @@ Note: Alternatively, you can run `npm start` for the client and server in separa
 ## Server Notes
 
 - Every time you update the graphql schema, you will need to `npm run generate:types`
-
-## Client Notes
-
-- Watch the terminal for React warnings, and ensure they are fixed before putting up your pull request.
 
 ### Troubleshooting
 
